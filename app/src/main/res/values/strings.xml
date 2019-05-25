@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Freedom Demo</string>
+    <string name="request">Request</string>
 </resources>
