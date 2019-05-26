@@ -12,7 +12,10 @@ import androidx.lifecycle.MutableLiveData
  * Copyright © 2019 Freedom. All rights reserved.
  */
 
-
+/**
+ * Headless fragment that handles permission model, permission requests and results
+ * @property resultLiveData MutableLiveData<Permission> on which results of the permission request will be set.
+ */
 internal class PermissionHelper : Fragment() {
 
     companion object {
@@ -27,6 +30,10 @@ internal class PermissionHelper : Fragment() {
 
     private var resultLiveData = MutableLiveData<Permission>()
 
+    /**
+     * Sets [MutableLiveData] instance on which events will be posted
+     * @param liveData MutableLiveData<Permission>
+     */
     internal fun setResultLiveData(liveData: MutableLiveData<Permission>) {
         resultLiveData = liveData
     }
@@ -36,12 +43,14 @@ internal class PermissionHelper : Fragment() {
         retainInstance = true
     }
 
-    fun executePermissionRequest(permission: String, liveData: MutableLiveData<Permission>) {
+    /**
+     * Entry point method to initiate permission request execution
+     * @param permission String is the requested permission
+     * @param liveData MutableLiveData<Permission> on which execution result will be emitted.
+     */
+    internal fun executePermissionRequest(permission: String, liveData: MutableLiveData<Permission>) {
         if (!hasPermissionDefinedInManifest(permission)) {
-            Throwable(
-                """No location permission is defined in manifest.
-                            Please make sure that location permission is added to the manifest"""
-            )
+            Throwable("$permission is not defined in the manifest")
             return
         }
         resultLiveData = liveData
@@ -49,8 +58,17 @@ internal class PermissionHelper : Fragment() {
     }
 
     /**
-     * Initiates permission model to request location permission in order to retrieve location successfully.=
-     * */
+     * Initiates permission model to request [permission].
+     *
+     * It follows google's recommendations for permission model.
+     *
+     * 1. Check whether the permission is already granted or not.
+     * 2. If not, then check if rationale should be displayed or not.
+     * 3. If not, check if the permission is requested for the first time or not.
+     * 4. If yes, save that in preferences and request permission.
+     * 5. If not, then the permission is permanently denied.
+     * @param permission String is the permission that needs to be requested.
+     */
     private fun initPermissionModel(permission: String) {
         Log.e(this::class.java.simpleName, "Initializing permission model")
         if (!hasPermission(permission)) {
@@ -58,11 +76,10 @@ internal class PermissionHelper : Fragment() {
             if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permission)) {
                 // should show rationale
                 resultLiveData.value =
-                    Permission(permission, PermissionState.ShouldShowRationale(object : RationaleInterface {
-                        override fun request() {
-                            requestPermission(permission)
-                        }
-                    }))
+                    Permission(
+                        permission,
+                        PermissionState.ShouldShowRationale(RationaleInterface { requestPermission(permission) })
+                    )
             } else {
                 if (isPermissionAskedFirstTime(permission)) {
                     // request permission
@@ -80,7 +97,7 @@ internal class PermissionHelper : Fragment() {
     }
 
     /**
-     * Requests user for location permission
+     * Actual request for the permission
      * */
     private fun requestPermission(permission: String) = requestPermissions(arrayOf(permission), REQUEST_CODE)
 
