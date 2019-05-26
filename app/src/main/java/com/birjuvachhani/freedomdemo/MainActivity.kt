@@ -9,10 +9,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.birjuvachhani.freedom.Freedom
+import com.birjuvachhani.freedom.RationaleInterface
 
 class MainActivity : AppCompatActivity() {
-
-//    private val freedom = Freedom(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,29 +25,37 @@ class MainActivity : AppCompatActivity() {
             showToast("Denied")
         } whenPermanentlyDenied {
             // permission permanently denied, show open settings dialog
-            AlertDialog.Builder(this)
-                .setTitle("Permission Blocked")
-                .setMessage("This feature requires location permission to function. Please grant location permission for settings.")
-                .setPositiveButton("OPEN SETTINGS") { dialog, _ ->
-                    openSettings()
-                    dialog.dismiss()
-                }
-                .setNegativeButton("CANCEL") { dialog, _ ->
-                    dialog.dismiss()
-                }.show()
-        } whenShouldShowRationale {
+            showPermissionBlockedDialog()
+        } whenShouldShowRationale { listener ->
             // show rationale dialog
-            AlertDialog.Builder(this)
-                .setTitle("Permission Required")
-                .setMessage("This feature requires location permission to function. Please grant location permission.")
-                .setPositiveButton("Grant") { dialog, _ ->
-                    it.request()
-                    dialog.dismiss()
-                }
-                .setNegativeButton("CANCEL") { dialog, _ ->
-                    dialog.dismiss()
-                }.show()
+            showRationaleDialog(listener)
         }
+    }
+
+    private fun showPermissionBlockedDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Permission Blocked")
+            .setMessage("This feature requires location permission to function. Please grant location permission for settings.")
+            .setPositiveButton("OPEN SETTINGS") { dialog, _ ->
+                openSettings()
+                dialog.dismiss()
+            }
+            .setNegativeButton("CANCEL") { dialog, _ ->
+                dialog.dismiss()
+            }.show()
+    }
+
+    private fun showRationaleDialog(listener: RationaleInterface) {
+        AlertDialog.Builder(this)
+            .setTitle("Permission Required")
+            .setMessage("This feature requires location permission to function. Please grant location permission.")
+            .setPositiveButton("Grant") { dialog, _ ->
+                listener.request()
+                dialog.dismiss()
+            }
+            .setNegativeButton("CANCEL") { dialog, _ ->
+                dialog.dismiss()
+            }.show()
     }
 
     /**
@@ -62,6 +69,9 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * method is invoked on button click which initiates permission request.
+     */
     fun requestPermission(view: View) {
         Freedom.request(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
     }
