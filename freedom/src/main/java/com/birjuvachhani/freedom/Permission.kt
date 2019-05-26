@@ -5,6 +5,11 @@ package com.birjuvachhani.freedom
  * Copyright © 2019 Freedom. All rights reserved.
  */
 
+/**
+ * Model class for holding information related to one permission.
+ * @property permission String defines the actual permission string
+ * @property state PermissionState represents the current state of the permission
+ */
 internal data class Permission(
     val permission: String,
     var state: PermissionState
