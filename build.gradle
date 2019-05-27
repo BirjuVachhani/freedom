@@ -12,18 +12,18 @@ buildscript {
     }
 }
 
-plugins {
-    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC6-3"
-}
-
-detekt {
-    version = "1.0.0.RC6-3"
-    profile("main") {
-        input = "$projectDir/freedom/src/main/java"
-        config = "$projectDir/detekt.yml"
-        filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
-    }
-}
+//plugins {
+//    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC6-3"
+//}
+//
+//detekt {
+//    version = "1.0.0.RC6-3"
+//    profile("main") {
+//        input = "$projectDir/freedom/src/main/java"
+//        config = "$projectDir/detekt.yml"
+//        filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
+//    }
+//}
 
 allprojects {
     repositories {
