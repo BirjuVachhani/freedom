@@ -9,6 +9,8 @@ Freedom is an Android library to handle runtime permissions in easiest way. Free
 
 Please note that this library is still under development. Stable version of the library will be released soon. Stay tuned!
 
+At this time, this library does not have support for multiple permission requests. We are planning to add it soon!
+
 ## Gradle Dependency
 
 * Add the JitPack repository to your project's build.gradle file
