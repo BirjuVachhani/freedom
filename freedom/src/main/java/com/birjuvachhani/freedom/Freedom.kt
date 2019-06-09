@@ -89,6 +89,7 @@ object Freedom {
      * Denied, Permanently Denied or ShouldShowRationale.
      */
     fun setListener(owner: LifecycleOwner): FreedomResult {
+        resultLiveData.removeObservers(owner)
         resultLiveData.observe(owner, Observer { result ->
             result?.let { permission ->
                 requestResult.callEventByState(permission.state)
