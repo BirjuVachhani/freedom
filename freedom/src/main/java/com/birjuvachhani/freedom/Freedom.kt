@@ -25,6 +25,13 @@ object Freedom {
     private val resultLiveData = MutableLiveData<Permission>()
     private val requestResult = FreedomResult()
 
+    private val permissionObserver = Observer<Permission> { result ->
+        result?.let { permission ->
+            requestResult.callEventByState(permission.state)
+            resultLiveData.value = null
+        }
+    }
+
     /**
      * Requests given permission.
      *
@@ -69,12 +76,9 @@ object Freedom {
         permission: String
     ): FreedomResult {
         resultLiveData.removeObservers(owner)
-        resultLiveData.observe(owner, Observer { result ->
-            result?.let { permission ->
-                requestResult.callEventByState(permission.state)
-                resultLiveData.value = null
-            }
-        })
+        resultLiveData.removeObserver(permissionObserver)
+        resultLiveData.observe(owner, permissionObserver)
+
         Handler().post { mPermissionHelper.executePermissionRequest(permission, resultLiveData) }
         return requestResult
     }
@@ -90,12 +94,8 @@ object Freedom {
      */
     fun setListener(owner: LifecycleOwner): FreedomResult {
         resultLiveData.removeObservers(owner)
-        resultLiveData.observe(owner, Observer { result ->
-            result?.let { permission ->
-                requestResult.callEventByState(permission.state)
-                resultLiveData.value = null
-            }
-        })
+        resultLiveData.removeObserver(permissionObserver)
+        resultLiveData.observe(owner, permissionObserver)
         return requestResult
     }
 
