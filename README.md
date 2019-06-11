@@ -30,7 +30,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.BirjuVachhani:freedom:0.9.0'
+    implementation 'com.github.BirjuVachhani:freedom:0.9.1'
 }
 ```
 
